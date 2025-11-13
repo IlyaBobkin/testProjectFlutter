@@ -29,12 +29,56 @@ class _MyAppState extends State<MyApp> {
       theme: ThemeData(
         brightness: Brightness.light,
         scaffoldBackgroundColor: Colors.white,
-        appBarTheme: const AppBarTheme(backgroundColor: Colors.white, foregroundColor: Colors.black, elevation: 0),
+        appBarTheme: const AppBarTheme(
+          backgroundColor: Colors.white,
+          foregroundColor: Colors.black,
+          elevation: 0,
+        ),
+        textTheme: const TextTheme(
+          displayLarge: TextStyle(fontFamily: 'OpenSans', fontWeight: FontWeight.bold),
+          displayMedium: TextStyle(fontFamily: 'OpenSans', fontWeight: FontWeight.bold),
+          displaySmall: TextStyle(fontFamily: 'OpenSans', fontWeight: FontWeight.bold),
+          headlineLarge: TextStyle(fontFamily: 'OpenSans', fontWeight: FontWeight.bold),
+          headlineMedium: TextStyle(fontFamily: 'OpenSans', fontWeight: FontWeight.bold),
+          headlineSmall: TextStyle(fontFamily: 'OpenSans', fontWeight: FontWeight.w600),
+          titleLarge: TextStyle(fontFamily: 'OpenSans', fontWeight: FontWeight.w600),
+          titleMedium: TextStyle(fontFamily: 'OpenSans', fontWeight: FontWeight.w500),
+          titleSmall: TextStyle(fontFamily: 'OpenSans', fontWeight: FontWeight.w500),
+          bodyLarge: TextStyle(fontFamily: 'OpenSans', fontSize: 14),
+          bodyMedium: TextStyle(fontFamily: 'OpenSans', fontSize: 14),
+          bodySmall: TextStyle(fontFamily: 'OpenSans', fontSize: 12),
+          labelLarge: TextStyle(fontFamily: 'OpenSans', fontWeight: FontWeight.w500),
+          labelMedium: TextStyle(fontFamily: 'OpenSans'),
+          labelSmall: TextStyle(fontFamily: 'OpenSans', fontSize: 11),
+        ).apply(bodyColor: Colors.black, displayColor: Colors.black),
+        fontFamily: 'OpenSans',
       ),
       darkTheme: ThemeData(
         brightness: Brightness.dark,
         scaffoldBackgroundColor: Colors.black,
-        appBarTheme: const AppBarTheme(backgroundColor: Colors.black, foregroundColor: Colors.white, elevation: 0),
+        appBarTheme: const AppBarTheme(
+          backgroundColor: Colors.black,
+          foregroundColor: Colors.white,
+          elevation: 0,
+        ),
+        textTheme: const TextTheme(
+          displayLarge: TextStyle(fontFamily: 'OpenSans', fontWeight: FontWeight.bold),
+          displayMedium: TextStyle(fontFamily: 'OpenSans', fontWeight: FontWeight.bold),
+          displaySmall: TextStyle(fontFamily: 'OpenSans', fontWeight: FontWeight.bold),
+          headlineLarge: TextStyle(fontFamily: 'OpenSans', fontWeight: FontWeight.bold),
+          headlineMedium: TextStyle(fontFamily: 'OpenSans', fontWeight: FontWeight.bold),
+          headlineSmall: TextStyle(fontFamily: 'OpenSans', fontWeight: FontWeight.w600),
+          titleLarge: TextStyle(fontFamily: 'OpenSans', fontWeight: FontWeight.w600),
+          titleMedium: TextStyle(fontFamily: 'OpenSans', fontWeight: FontWeight.w500),
+          titleSmall: TextStyle(fontFamily: 'OpenSans', fontWeight: FontWeight.w500),
+          bodyLarge: TextStyle(fontFamily: 'OpenSans', fontSize: 14),
+          bodyMedium: TextStyle(fontFamily: 'OpenSans', fontSize: 14),
+          bodySmall: TextStyle(fontFamily: 'OpenSans', fontSize: 12),
+          labelLarge: TextStyle(fontFamily: 'OpenSans', fontWeight: FontWeight.w500),
+          labelMedium: TextStyle(fontFamily: 'OpenSans'),
+          labelSmall: TextStyle(fontFamily: 'OpenSans', fontSize: 11),
+        ).apply(bodyColor: Colors.white, displayColor: Colors.white),
+        fontFamily: 'OpenSans',
       ),
       themeMode: isDarkMode ? ThemeMode.dark : ThemeMode.light,
       home: CatalogScreen(setDarkMode: setDarkMode, isDarkMode: isDarkMode),
@@ -157,6 +201,120 @@ class Cart {
   double get totalPrice => items.fold(0.0, (sum, i) => sum + i.quantity * i.product.price);
 }
 
+// ===================== КАРТОЧКА ТОВАРА =====================
+class ProductCard extends StatefulWidget {
+  final Product product;
+  final VoidCallback onTap;
+
+  const ProductCard({super.key, required this.product, required this.onTap});
+
+  @override
+  State<ProductCard> createState() => _ProductCardState();
+}
+
+class _ProductCardState extends State<ProductCard> {
+  late PageController _pageController;
+  int currentPage = 0;
+
+  @override
+  void initState() {
+    super.initState();
+    _pageController = PageController();
+  }
+
+  @override
+  void dispose() {
+    _pageController.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final bgColor = isDark ? Colors.black : Colors.white;
+    final textColor = isDark ? Colors.white : Colors.black;
+
+    return GestureDetector(
+      onTap: widget.onTap,
+      child: Container(
+        decoration: BoxDecoration(color: bgColor),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            ClipRRect(
+              borderRadius: const BorderRadius.vertical(top: Radius.circular(15), bottom: Radius.circular(15)),
+              child: Stack(
+                children: [
+                  SizedBox(
+                    height: 270,
+                    width: double.infinity,
+                    child: PageView.builder(
+                      controller: _pageController,
+                      onPageChanged: (i) => setState(() => currentPage = i),
+                      itemCount: widget.product.images.length,
+                      itemBuilder: (ctx, i) => Image.network(
+                        widget.product.images[i],
+                        fit: BoxFit.cover,
+                        width: double.infinity,
+                      ),
+                    ),
+                  ),
+                  if (widget.product.images.length > 1)
+                    Positioned(
+                      bottom: 12,
+                      left: 14,
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 10),
+                        decoration: BoxDecoration(
+                          color: Colors.white.withOpacity(0.6),
+                          borderRadius: BorderRadius.circular(15),
+                        ),
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: List.generate(widget.product.images.length, (i) {
+                            return AnimatedContainer(
+                              duration: const Duration(milliseconds: 300),
+                              width: 7,
+                              height: 7,
+                              margin: const EdgeInsets.symmetric(horizontal: 3),
+                              decoration: BoxDecoration(
+                                shape: BoxShape.circle,
+                                color: i == currentPage ? Colors.black : Colors.white,
+                              ),
+                            );
+                          }),
+                        ),
+                      ),
+                    ),
+                ],
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.fromLTRB(16, 16, 16, 16),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  Text(
+                    '${widget.product.price.toStringAsFixed(0)} руб.',
+                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: textColor),
+                  ),
+                  const SizedBox(height: 6),
+                  Text(
+                    widget.product.name,
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
+                    style: TextStyle(fontSize: 13, color: textColor, height: 1.3, fontWeight: FontWeight.w300),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
 // ===================== ЭКРАН КАТАЛОГА =====================
 class CatalogScreen extends StatefulWidget {
   final Function(bool) setDarkMode;
@@ -170,11 +328,12 @@ class CatalogScreen extends StatefulWidget {
 
 class _CatalogScreenState extends State<CatalogScreen> {
   List<Category> categories = [];
-  String selectedCategoryUrl = '';
+  String selectedCategoryUrl = 'clothes';
   List<Product> products = [];
   bool isLoading = false;
   int currentPage = 1;
   bool hasMore = true;
+  String? errorMessage;
   final ScrollController _scrollController = ScrollController();
   final Cart cart = Cart();
 
@@ -182,6 +341,7 @@ class _CatalogScreenState extends State<CatalogScreen> {
   void initState() {
     super.initState();
     cart.loadCart().then((_) => setState(() {}));
+    errorMessage = null;
     fetchCategories();
     _scrollController.addListener(() {
       if (_scrollController.position.pixels >= _scrollController.position.maxScrollExtent - 200 && !isLoading && hasMore) {
@@ -190,64 +350,50 @@ class _CatalogScreenState extends State<CatalogScreen> {
     });
   }
 
-// ===================== ЗАГРУЗКА КАТЕГОРИЙ =====================
   Future<void> fetchCategories() async {
     const String url = 'https://api.lichi.com/category/get_category_detail';
     final response = await http.post(
       Uri.parse(url),
       headers: {'Content-Type': 'application/json'},
-      body: jsonEncode({
-        'shop': 2,
-        'lang': 1,
-        'category': 'clothes',
-      }),
+      body: jsonEncode({'shop': 2, 'lang': 1, 'category': 'clothes'}),
     );
-
-    print('Categories Response: ${response.statusCode}');
-    print('Body: ${response.body}');
 
     if (response.statusCode == 200) {
       final data = jsonDecode(response.body);
       final List aMenu = data['api_data']['aMenu'] ?? [];
-
-      final fetchedCategories = aMenu
-          .where((json) => json['type'] == 'category')
-          .map((json) => Category.fromJson(json))
-          .toList();
+      final fetchedCategories = aMenu.where((json) => json['type'] == 'category').map((json) => Category.fromJson(json)).toList();
 
       setState(() {
-        categories = [Category(id: 'all', url: '', name: 'Все')];
+        categories = [Category(id: 'all', url: 'clothes', name: 'Все')];
         categories.addAll(fetchedCategories);
-        selectedCategoryUrl = '';
+        selectedCategoryUrl = 'clothes';
+        errorMessage = null;
       });
 
       await fetchProducts(reset: true);
     } else {
-      print('Ошибка загрузки категорий: ${response.body}');
+      setState(() => errorMessage = 'Не удалось загрузить категории.');
     }
   }
 
-// ===================== ЗАГРУЗКА ТОВАРОВ =====================
   Future<void> fetchProducts({bool reset = false}) async {
     if (reset) {
       currentPage = 1;
       products.clear();
       hasMore = true;
+      errorMessage = null;
     }
     if (!hasMore || isLoading) return;
 
     setState(() => isLoading = true);
 
-    final body = <String, Object>{
+    final body = {
       'shop': 2,
       'lang': 1,
       'limit': 12,
       'page': currentPage,
+      'category': selectedCategoryUrl,
     };
-
-    if (selectedCategoryUrl.isNotEmpty) {
-      body['category'] = selectedCategoryUrl;
-    }
 
     final response = await http.post(
       Uri.parse('https://api.lichi.com/category/get_category_product_list'),
@@ -255,20 +401,27 @@ class _CatalogScreenState extends State<CatalogScreen> {
       body: jsonEncode(body),
     );
 
-    print('Products Response: ${response.statusCode}');
-    print('Body: ${response.body}');
-
     if (response.statusCode == 200) {
       final data = jsonDecode(response.body);
       final List aProduct = data['api_data']['aProduct'] ?? [];
-      final fetchedProducts = aProduct.map((e) => Product.fromJson(e)).toList();
 
-      if (fetchedProducts.length < 12) hasMore = false;
-      products.addAll(fetchedProducts);
-      currentPage++;
-      setState(() {});
+      if (aProduct.isEmpty && currentPage == 1) {
+        setState(() {
+          errorMessage = 'Товары в данной категории отсутствуют,\nпожалуйста выберите другую : (';
+          hasMore = false;
+        });
+      } else {
+        final fetchedProducts = aProduct.map((e) => Product.fromJson(e)).toList();
+        if (fetchedProducts.length < 12) hasMore = false;
+        products.addAll(fetchedProducts);
+        currentPage++;
+        setState(() {});
+      }
     } else {
-      print('Ошибка загрузки товаров: ${response.body}');
+      setState(() {
+        errorMessage = 'Ошибка загрузки товаров.\nПроверьте интернет или попробуйте позже.';
+        hasMore = false;
+      });
     }
 
     setState(() => isLoading = false);
@@ -306,33 +459,22 @@ class _CatalogScreenState extends State<CatalogScreen> {
             children: [
               Text(
                 'Выберите размер',
-                style: TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.bold,
-                  color: textColor,
-                ),
+                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: textColor),
               ),
               const SizedBox(height: 16),
-
               ...product.sizes.map((size) {
                 final isAvailable = true;
                 final isSelected = selectedSize == size;
-
                 return Padding(
                   padding: const EdgeInsets.symmetric(vertical: 6),
                   child: GestureDetector(
-                    onTap: isAvailable
-                        ? () => setModalState(() => selectedSize = size)
-                        : null,
+                    onTap: isAvailable ? () => setModalState(() => selectedSize = size) : null,
                     child: Container(
                       padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 16),
                       decoration: BoxDecoration(
                         color: isSelected ? activeBg : inactiveBg,
                         borderRadius: BorderRadius.circular(12),
-                        border: Border.all(
-                          color: isDark ? Colors.grey[700]! : Colors.grey[300]!,
-                          width: 1,
-                        ),
+                        border: Border.all(color: isDark ? Colors.grey[700]! : Colors.grey[300]!, width: 1),
                       ),
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -345,29 +487,19 @@ class _CatalogScreenState extends State<CatalogScreen> {
                             ),
                           ),
                           if (!isAvailable)
-                            Text(
-                              'Нет в наличии',
-                              style: TextStyle(color: Colors.red[400], fontSize: 12),
-                            ),
+                            Text('Нет в наличии', style: TextStyle(color: Colors.red[400], fontSize: 12)),
                         ],
                       ),
                     ),
                   ),
                 );
               }),
-
               const SizedBox(height: 12),
-
               TextButton(
                 onPressed: () {},
-                child: Text(
-                  'Как подобрать размер?',
-                  style: TextStyle(color: Colors.blue[600]),
-                ),
+                child: Text('Как подобрать размер?', style: TextStyle(color: Colors.blue[600])),
               ),
-
               const SizedBox(height: 20),
-
               SizedBox(
                 width: double.infinity,
                 child: ElevatedButton(
@@ -375,9 +507,7 @@ class _CatalogScreenState extends State<CatalogScreen> {
                     backgroundColor: Colors.black,
                     foregroundColor: Colors.white,
                     padding: const EdgeInsets.symmetric(vertical: 18),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(30),
-                    ),
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),
                     elevation: 0,
                   ),
                   onPressed: selectedSize == null
@@ -439,21 +569,14 @@ class _CatalogScreenState extends State<CatalogScreen> {
                   children: [
                     Text(
                       '${cart.totalCount}',
-                      style: TextStyle(
-                        color: bgColor,
-                        fontSize: 22,
-                        fontWeight: FontWeight.bold,
-                      ),
+                      style: TextStyle(color: bgColor, fontSize: 22, fontWeight: FontWeight.bold),
                       textAlign: TextAlign.center,
                     ),
-                    Positioned(
-                      left: 16,
-                      child: SvgPicture.asset(
-                        'images/cart_white.svg',
-                        width: 18,
-                        height: 18,
-                        colorFilter: ColorFilter.mode(bgColor, BlendMode.srcIn),
-                      ),
+                    SvgPicture.asset(
+                      'images/cart_white.svg',
+                      width: 18,
+                      height: 18,
+                      colorFilter: ColorFilter.mode(bgColor, BlendMode.srcIn),
                     ),
                   ],
                 ),
@@ -473,9 +596,8 @@ class _CatalogScreenState extends State<CatalogScreen> {
               style: TextStyle(fontSize: 13, height: 1.5, color: textColor, fontWeight: FontWeight.w300),
             ),
           ),
-
           Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 5,vertical: 20),
+            padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 20),
             child: Row(
               children: [
                 Expanded(
@@ -511,9 +633,7 @@ class _CatalogScreenState extends State<CatalogScreen> {
               ],
             ),
           ),
-
           const SizedBox(height: 8),
-
           SizedBox(
             height: 50,
             child: ListView.builder(
@@ -543,12 +663,7 @@ class _CatalogScreenState extends State<CatalogScreen> {
                           ),
                         ),
                         if (isSelected)
-                          Container(
-                            margin: const EdgeInsets.only(top: 6),
-                            height: 2,
-                            width: 24,
-                            color: textColor,
-                          ),
+                          Container(margin: const EdgeInsets.only(top: 6), height: 2, width: 24, color: textColor),
                       ],
                     ),
                   ),
@@ -556,9 +671,24 @@ class _CatalogScreenState extends State<CatalogScreen> {
               },
             ),
           ),
-
+          const SizedBox(height: 16),
           Expanded(
-            child: GridView.builder(
+            child: errorMessage != null
+                ? Center(
+              child: Padding(
+                padding: const EdgeInsets.all(32),
+                child: Text(
+                  errorMessage!,
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    fontSize: 16,
+                    color: textColor.withOpacity(0.7),
+                    height: 1.5,
+                  ),
+                ),
+              ),
+            )
+                : GridView.builder(
               controller: _scrollController,
               padding: const EdgeInsets.symmetric(horizontal: 5),
               gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
@@ -569,100 +699,13 @@ class _CatalogScreenState extends State<CatalogScreen> {
               ),
               itemCount: products.length + (hasMore ? 1 : 0),
               itemBuilder: (context, index) {
-                if (index == products.length) return const Center(child: CircularProgressIndicator());
+                if (index == products.length) {
+                  return const Center(child: CircularProgressIndicator());
+                }
                 final product = products[index];
-
-                return StatefulBuilder(
-                  builder: (context, setStateGrid) {
-                    int currentPage = 0;
-                    final PageController pageController = PageController();
-
-                    return GestureDetector(
-                      onTap: () => showProductModal(product),
-                      child: Container(
-                        decoration: BoxDecoration(
-                          color: bgColor,
-                        ),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            ClipRRect(
-                              borderRadius: const BorderRadius.vertical(top: Radius.circular(15), bottom: Radius.circular(15)),
-                              child: Stack(
-                                children: [
-                                  SizedBox(
-                                    height: 270,
-                                    width: double.infinity,
-                                    child: PageView.builder(
-                                      controller: pageController,
-                                      onPageChanged: (i) => setStateGrid(() => currentPage = i),
-                                      itemCount: product.images.length,
-                                      itemBuilder: (ctx, i) => Image.network(
-                                        product.images[i],
-                                        fit: BoxFit.cover,
-                                        width: double.infinity,
-                                      ),
-                                    ),
-                                  ),
-                                  if (product.images.length > 1)
-                                    Positioned(
-                                      bottom: 12,
-                                      left: 0,
-                                      right: 0,
-                                      child: Row(
-                                        mainAxisAlignment: MainAxisAlignment.center,
-                                        children: List.generate(product.images.length, (i) {
-                                          return AnimatedContainer(
-                                            duration: const Duration(milliseconds: 300),
-                                            width: 7,
-                                            height: 7,
-                                            margin: const EdgeInsets.symmetric(horizontal: 3),
-                                            decoration: BoxDecoration(
-                                              shape: BoxShape.circle,
-                                              color: i == currentPage ? Colors.white : Colors.white.withOpacity(0.5),
-                                              border: Border.all(color: Colors.white, width: 1),
-                                            ),
-                                          );
-                                        }),
-                                      ),
-                                    ),
-                                ],
-                              ),
-                            ),
-
-                            Padding(
-                              padding: const EdgeInsets.fromLTRB(16, 16, 16, 16),
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.center,
-                                children: [
-                                  Text(
-                                    '${product.price.toStringAsFixed(0)} руб.',
-                                    style: TextStyle(
-                                      fontSize: 18,
-                                      fontWeight: FontWeight.bold,
-                                      color: textColor,
-                                    ),
-                                  ),
-                                  const SizedBox(height: 6),
-                                  Text(
-                                    product.name,
-                                    maxLines: 2,
-                                    overflow: TextOverflow.ellipsis,
-                                    style: TextStyle(
-                                      fontSize: 13,
-                                      color: textColor,
-                                      height: 1.3,
-                                      fontWeight: FontWeight.w300
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    );
-                  },
+                return ProductCard(
+                  product: product,
+                  onTap: () => showProductModal(product),
                 );
               },
             ),
@@ -697,7 +740,16 @@ class _CartScreenState extends State<CartScreen> {
         foregroundColor: isDark ? Colors.white : Colors.black,
       ),
       body: widget.cart.items.isEmpty
-          ? const Center(child: Column(crossAxisAlignment: CrossAxisAlignment.center,mainAxisAlignment: MainAxisAlignment.center,children: [Text('Корзина пустая'), Text('Добавьте все что вы хотите.')],))
+          ? const Center(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Text('Корзина пустая'),
+            Text('Добавьте все что вы хотите.'),
+          ],
+        ),
+      )
           : Column(
         children: [
           Expanded(
@@ -706,7 +758,6 @@ class _CartScreenState extends State<CartScreen> {
               itemCount: widget.cart.items.length,
               itemBuilder: (context, index) {
                 final item = widget.cart.items[index];
-
                 return Container(
                   margin: const EdgeInsets.only(bottom: 12),
                   padding: const EdgeInsets.all(12),
@@ -721,38 +772,22 @@ class _CartScreenState extends State<CartScreen> {
                       ClipRRect(
                         borderRadius: BorderRadius.circular(12),
                         child: item.product.images.isNotEmpty
-                            ? Image.network(
-                          item.product.images[0],
-                          width: 80,
-                          height: 100,
-                          fit: BoxFit.cover,
-                        )
+                            ? Image.network(item.product.images[0], width: 80, height: 100, fit: BoxFit.cover)
                             : Container(width: 80, height: 100, color: Colors.grey[300]),
                       ),
                       const SizedBox(width: 12),
-
                       Expanded(
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Text(
-                              item.product.name,
-                              style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
-                            ),
+                            Text(item.product.name, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14)),
                             const SizedBox(height: 4),
-                            Text(
-                              item.size,
-                              style: TextStyle(color: Colors.grey[600], fontSize: 13),
-                            ),
+                            Text(item.size, style: TextStyle(color: Colors.grey[600], fontSize: 13)),
                             const SizedBox(height: 8),
-                            Text(
-                              '${item.product.price.toStringAsFixed(0)} руб.',
-                              style: const TextStyle(fontWeight: FontWeight.bold),
-                            ),
+                            Text('${item.product.price.toStringAsFixed(0)} руб.', style: const TextStyle(fontWeight: FontWeight.bold)),
                           ],
                         ),
                       ),
-
                       Column(
                         children: [
                           Row(
