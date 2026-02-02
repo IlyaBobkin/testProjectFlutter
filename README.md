@@ -28,7 +28,7 @@
 Интерфейс разработан по дизайн-макетам из Figma
 
 🛠️ Используемые технологии
-<div align="center"> <table> <tr> <td align="center"> <img src="https://upload.wikimedia.org/wikipedia/commons/1/17/Google-flutter-logo.png" width="40"/><br/> <b>Flutter</b> </td> <td align="center"> <img src="https://upload.wikimedia.org/wikipedia/commons/7/7e/Dart-logo.png" width="40"/><br/> <b>Dart</b> </td> <td align="center"> <b>Riverpod</b><br/> State Management </td> <td align="center"> <b>Dio + Retrofit</b><br/> HTTP клиент </td> <td align="center"> <img src="https://raw.githubusercontent.com/hivedb/hive/master/.github/hive_logo.svg" width="40"/><br/> <b>Hive</b> </td> <td align="center"> <img src="https://yoolk.ninja/wp-content/uploads/2021/11/Apps-Figma.png" width="40"/><br/> <b>Figma</b> </td> </tr> </table> </div>
+Flutter, Dart, Dio, Figma
 
 📐 Архитектура и инструменты
 Архитектура: Clean Architecture + MVVM
