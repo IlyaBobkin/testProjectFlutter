@@ -30,14 +30,12 @@
 
 🛠️ Используемые технологии
 <div align="center"> <table> <tr> <td align="center"> <img src="https://upload.wikimedia.org/wikipedia/commons/1/17/Google-flutter-logo.png" width="40"/><br/> <b>Flutter</b> </td> <td align="center"> <img src="https://upload.wikimedia.org/wikipedia/commons/7/7e/Dart-logo.png" width="40"/><br/> <b>Dart</b> </td> <td align="center"> <b>Riverpod</b><br/> State Management </td> <td align="center"> <b>Dio + Retrofit</b><br/> HTTP клиент </td> <td align="center"> <img src="https://raw.githubusercontent.com/hivedb/hive/master/.github/hive_logo.svg" width="40"/><br/> <b>Hive</b> </td> <td align="center"> <img src="https://yoolk.ninja/wp-content/uploads/2021/11/Apps-Figma.png" width="40"/><br/> <b>Figma</b> </td> </tr> </table> </div>
-📐 Архитектура и инструменты
 
-Архитектура: Clean Architecture + BLoC / Riverpod
-Локальное хранилище: Hive (кэширование и оффлайн-доступ)
-Сеть: Dio с интерцепторами (логирование, обработка ошибок, кэш)
+📐 Архитектура и инструменты
+Архитектура: Clean Architecture + MVVM
+Сеть: Dio
 
 📸 Скриншоты
-Каталог товаров	Карточка товара	Корзина
 <img width="270" height="600" alt="image" src="https://github.com/user-attachments/assets/7bf9fb60-207c-4f3e-9509-c7a4ef346671" />
 <img width="270" height="600" alt="image" src="https://github.com/user-attachments/assets/b6835a3f-dcf6-4d3a-beb0-b9c2c9637a31" />
 <img width="270" height="600" alt="image" src="https://github.com/user-attachments/assets/190ad005-bbdb-4389-8749-797c5a24d495" />
